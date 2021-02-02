@@ -164,6 +164,50 @@ WARNING: sun.reflect.Reflection.getCallerClass is not supported. This will impac
 ...
 
 ```
-- Generate some traffic by running the script below. Keep 
+- Generate some traffic by running the script "generate-traffic.sh" below. 
+
+generate-traffic.sh
+
+```bash
+#!/bin/bash
+export IP=`kubectl get service apm-elastic-customer-api-lb -o=jsonpath='{.status.loadBalancer.ingress[0].ip}{"\n"}'`
+
+echo "Using IP as $IP"
+echo ""
+
+while :
+do
+	echo "Press [CTRL+C] to stop.."
+        http http://$IP/customers
+        http http://$IP/customers/1
+        http http://$IP/customers/2
+        http http://$IP/customers/sgwhwh
+        http "http://$IP/customers?page=0&size=2"
+        http POST http://$IP/customers < new-customer-error.json
+
+	sleep 5
+done
+```
+
+Note: This script will continue running and accessing the application. Leave it running so that data can flow into APM
+
+- Head to APM to view application traces, service map, errors, database calls and more 
+
+![alt tag](https://i.ibb.co/2YN8bsW/K8s-init-apm-3.png)
+
+![alt tag](https://i.ibb.co/gJRS1Sz/K8s-init-apm-4.png)
+
+![alt tag](https://i.ibb.co/8sTYYRn/K8s-init-apm-5.png)
+
+![alt tag](https://i.ibb.co/vh6Jncc/K8s-init-apm-6.png)
+
+![alt tag](https://i.ibb.co/60KXkPk/K8s-init-apm-7.png)
+
+![alt tag](https://i.ibb.co/9s1GwWV/K8s-init-apm-8.png)
+
+![alt tag](https://i.ibb.co/frJKNW5/K8s-init-apm-9.png)
+
+![alt tag](https://i.ibb.co/5vNd4CQ/K8s-init-apm-10.png)
+
 <hr />
 Pas Apicella [pas.apicella at elastic.co] is an Solution Architect at Elastic APJ  
