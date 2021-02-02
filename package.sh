@@ -1,0 +1,1 @@
+./mvnw -D skipTests package

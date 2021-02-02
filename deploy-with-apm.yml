@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apm-elastic-customer-api
+spec:
+  selector:
+    matchLabels:
+      app: apm-elastic-customer-api
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: apm-elastic-customer-api
+    spec:
+      volumes:
+        - name: elastic-apm-agent
+          emptyDir: { }
+      initContainers:
+        - name: elastic-java-agent
+          image: docker.elastic.co/observability/apm-agent-java:1.20.0
+          volumeMounts:
+            - mountPath: /elastic/apm/agent
+              name: elastic-apm-agent
+          command: [ 'cp', '-v', '/usr/agent/elastic-apm-agent.jar', '/elastic/apm/agent' ]
+      containers:
+        - name: apm-elastic-customer-api
+          image: pasapples/elastic-customer-api:1.0
+          volumeMounts:
+            - mountPath: /elastic/apm/agent
+              name: elastic-apm-agent
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ELASTIC_APM_ENABLE_LOG_CORRELATION
+              value: "true"
+            - name: ELASTIC_APM_CAPTURE_JMX_METRICS
+              value: >-
+                object_name[java.lang:type=GarbageCollector,name=*] attribute[CollectionCount:metric_name=collection_count] attribute[CollectionTime:metric_name=collection_time],
+                object_name[java.lang:type=Memory] attribute[HeapMemoryUsage:metric_name=heap]
+            - name: ELASTIC_APM_SERVER_URLS
+              valueFrom:
+                configMapKeyRef:
+                  name: apm-agent-details
+                  key: server_urls
+            - name: ELASTIC_APM_SERVICE_NAME
+              value: "elastic-customer-api-rest"
+            - name: ELASTIC_APM_APPLICATION_PACKAGES
+              value: "com.example.demo"
+            - name: ELASTIC_APM_SECRET_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: apm-token-secret
+                  key: secret_token
+            - name: JAVA_TOOL_OPTIONS
+              value: -javaagent:/elastic/apm/agent/elastic-apm-agent.jar
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: apm-elastic-customer-api-lb
+  labels:
+    name: apm-elastic-customer-api-lb
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+  selector:
+    app: apm-elastic-customer-api
+  type: LoadBalancer

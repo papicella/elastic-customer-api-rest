@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: elastic-customer-api
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+      use-new-id-generator-mappings: false
+    show-sql: true
