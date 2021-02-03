@@ -1,8 +1,8 @@
 # Elastic Spring Customer RESTful - APM Demo
 
-This demo is a Spring Boot application which can be used to deploy to K8s and inject automatically an Elastic Agent for APM Monitoring with Elastic Observability.
+This GitHub demo is a Spring Boot application which accesses relational database with Spring Data JPA through a hypermedia-based RESTful front end. You can use the repo instructions to deploy to K8s and inject automatically an Elastic Agent for APM Monitoring with Elastic Observability.
 
-There is no code changes required simply use an Init Container on K8s to instrument your application on Elasic APM server using the steps below
+There is no code changes required simply use an Init Container on K8s to instrument your application on Elastic APM server as shown by this GitHub repo below.
 
 ## Prerequisites
 
