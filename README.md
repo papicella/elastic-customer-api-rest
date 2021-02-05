@@ -2,7 +2,7 @@
 
 This GitHub demo is a Spring Boot application which accesses relational database with Spring Data JPA through a hypermedia-based RESTful front end. You can use the repo instructions to deploy to K8s and inject automatically an Elastic Agent for APM Monitoring with Elastic Observability.
 
-There is no code changes required simply use an Init Container on K8s to instrument your application on Elastic APM server as shown by this GitHub repo below.
+There is no code changes required simply use an Init Container on K8s to instrument your application on Elastic APM server as shown by this steps below.
 
 ## Prerequisites
 
@@ -29,16 +29,16 @@ gke-eck-pas-default-pool-ca35a196-ghm2   Ready    <none>   19d   v1.16.15-gke.60
 Image: pasapples/elastic-customer-api
 ```
 
--  Create a secret and config map in your K8s cluster to hold the APM server URL and your APM token which you can retrieve from Elastic Cloud as shown below> be sure you replace APM_TOKEN and APM_URL with your own details
+-  Create a secret and config map in your K8s cluster to hold the APM server URL and your APM token which you can retrieve from Elastic Cloud as shown below. Be sure you replace APM_TOKEN and APM_URL with your own details!
 
 APM_TOKEN and APM_URL can be retried from Elastic Cloud (ESS) clicking on APM for your deployment
 
-![alt tag](https://i.ibb.co/60Q6Pg2/K8s-init-apm-1.png)
+![alt tag](https://i.ibb.co/60Q6Pg2/K8s-init-apm-1.png) 
 
 ```bash
-$ kubectl create secret generic apm-token-secret --from-literal=secret_token=APM_TOKEN
+$ kubectl create secret generic apm-token-secret --from-literal=secret_token=$APM_TOKEN
 
-$ kubectl create configmap apm-agent-details --from-literal=server_urls=APM_URL
+$ kubectl create configmap apm-agent-details --from-literal=server_urls=$APM_URL
 ```
 
 - Deploy the application to K8s using the deployment YAML below. It exists in this repo as "**deploy-with-apm.yml**"
@@ -124,7 +124,7 @@ Deploy command:
 $ kubectl apply -f deploy-with-apm.yml
 ```
 
-- Verify everything is up and running. You may need to wait a minute or two for the POD to be in a running state
+- Verify everything is up and running. You may need to wait a minute or two for the POD to be in a running state.
 
 ```bash 
 $ kubectl get all
@@ -142,7 +142,7 @@ NAME                                                  DESIRED   CURRENT   READY 
 replicaset.apps/apm-elastic-customer-api-589df89779   1         1         1       4h11m
 ```
 
-- Check the POD logs to ensure it has connected with APM successfully
+- Check the POD logs to ensure it has connected with APM successfully using the POD name from the output above.
 
 ```bash
 $ kubectl logs apm-elastic-customer-api-589df89779-7mdlg
@@ -166,7 +166,8 @@ WARNING: sun.reflect.Reflection.getCallerClass is not supported. This will impac
 ...
 
 ```
-- Generate some traffic by running the script "generate-traffic.sh" below. 
+
+- Generate some traffic by running the script "**generate-traffic.sh**" below. 
 
 generate-traffic.sh
 
